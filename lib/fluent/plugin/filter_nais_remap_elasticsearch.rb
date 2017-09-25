@@ -11,7 +11,7 @@ module Fluent::Plugin
     end
       
     def filter(tag, time, record)
-      ::Nais::Log::Parser.remap_elasticsearch_fields(record)
+      ::Nais::Log::Parser.remap_elasticsearch_fields(time, record)
     end
     
   end
