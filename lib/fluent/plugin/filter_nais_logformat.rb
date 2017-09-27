@@ -26,7 +26,8 @@ module Fluent::Plugin
         elsif fmt == 'glog'
           r = ::Nais::Log::Parser.parse_glog(record['log'])
           unless r.nil?
-            r['component'] = r.delete('file')+':'+r.delete('line')
+            r['source'] = r['file']+':'+r.delete('line')
+            r['component'] = r.delete('file')
             r['log'] = r.delete('message')
           end
         end
