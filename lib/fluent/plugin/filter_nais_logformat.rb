@@ -11,15 +11,23 @@ module Fluent::Plugin
     end
       
     def filter(tag, time, record)
-      fmt = record['kubernetes']['annotations']['nais.io/logformat']
+      fmt = record['kubernetes']['annotations']['nais_io/logformat']
       r = nil
       if fmt == 'accesslog'
         r = ::Nais::Log::Parser.parse_accesslog(record['log'])
-        r = r[0] unless r.nil?
+        unless r.nil?
+          r = r[0]
+          r['log'] = r.delete('request')
+        end
       elsif fmt == 'accesslog_with_processing_time'
         r = ::Nais::Log::Parser.parse_accesslog_with_processing_time(record['log'])
+        r['log'] = r.delete('request') unless r.nil?
       elsif fmt == 'glog'
         r = ::Nais::Log::Parser.parse_glog(record['log'])
+        unless r.nil?
+          r['component'] = r.delete('file')+':'+r.delete('line')
+          r['log'] = r.delete('message')
+        end
       end
       if r.nil?
         record
