@@ -37,7 +37,11 @@ module Fluent::Plugin
               r['log'] = r.delete('request')
               r['request'] = r.delete('request_id')
             else
-              r['log'] = record['log'].sub(/^\S+ /, '')
+              if r.has_key?('timestamp')
+                r['log'] = record['log'].sub(/^\S+ \S+ \S+ /, '')
+              else
+                r['log'] = record['log'].sub(/^\S+ /, '')
+              end
             end
           end
         end
