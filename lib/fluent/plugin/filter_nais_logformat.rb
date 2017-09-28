@@ -30,6 +30,16 @@ module Fluent::Plugin
             r['component'] = r.delete('file')
             r['log'] = r.delete('message')
           end
+        elsif fmt == 'influxdb'
+          r = ::Nais::Log::Parser.parse_influxdb(record['log'])
+          unless r.nil?
+            if r['component'] == 'httpd'
+              r['log'] = r.delete('request')
+              r['request'] = r.delete('request_id')
+            else
+              r['log'] = record['log'].sub(/^\S+ /, '')
+            end
+          end
         end
       end
       if r.nil?
