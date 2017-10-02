@@ -44,6 +44,8 @@ module Fluent::Plugin
               end
             end
           end
+        elsif fmt == 'log15'
+          ::Nais::Log::Parser.remap_log15(record)
         end
       end
       if r.nil?
