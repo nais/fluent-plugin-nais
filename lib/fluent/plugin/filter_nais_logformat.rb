@@ -40,8 +40,8 @@ module Fluent::Plugin
           r = ::Nais::Log::Parser.parse_influxdb(record['log'])
           unless r.nil?
             if r['component'] == 'httpd'
-              r['log'] = r.delete('request')
-              r['request'] = r.delete('request_id')
+              r['log'] = r.delete('request') unless r['request'].nil?
+              r['request'] = r.delete('request_id') unless r['request_id'].nil?
               level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
               r['level'] = level unless level.nil?
             else
