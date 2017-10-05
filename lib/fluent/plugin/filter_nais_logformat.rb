@@ -19,10 +19,14 @@ module Fluent::Plugin
           unless r.nil?
             r = r[0]
             r['log'] = r.delete('request')
+            level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
+            r['level'] = level unless level.nil?
           end
         elsif fmt == 'accesslog_with_processing_time'
           r = ::Nais::Log::Parser.parse_accesslog_with_processing_time(record['log'])
           r['log'] = r.delete('request') unless r.nil?
+          level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
+          r['level'] = level unless level.nil?
         elsif fmt == 'glog'
           r = ::Nais::Log::Parser.parse_glog(record['log'])
           unless r.nil?
@@ -36,6 +40,8 @@ module Fluent::Plugin
             if r['component'] == 'httpd'
               r['log'] = r.delete('request')
               r['request'] = r.delete('request_id')
+              level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
+              r['level'] = level unless level.nil?
             else
               if r.has_key?('timestamp')
                 r['log'] = record['log'].sub(/^\S+ \S+ \S+ /, '')
