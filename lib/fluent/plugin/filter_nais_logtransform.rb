@@ -14,7 +14,7 @@ module Fluent::Plugin
       if record['kubernetes'].is_a?(Hash) && record['kubernetes']['annotations'].is_a?(Hash)
         transformers = record['kubernetes']['annotations']['nais_io/logtransform']
         unless transformers.nil?
-          transformer.split(/ *, */).each { |t|
+          transformers.split(/ *, */).each { |t|
             if t == 'dns_loglevel'
               level = ::Nais::Log::Parser.loglevel_from_dns_response(record['response_code'])
               record['level'] = level unless level.nil?
