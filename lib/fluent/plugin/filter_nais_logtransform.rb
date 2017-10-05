@@ -11,21 +11,21 @@ module Fluent::Plugin
     end
       
     def filter(tag, time, record)
-      r = nil
       if record['kubernetes'].is_a?(Hash) && record['kubernetes']['annotations'].is_a?(Hash)
         transformers = record['kubernetes']['annotations']['nais_io/logtransform']
         unless transformers.nil?
           transformer.split(/ *, */).each { |t|
             if t == 'dns_loglevel'
-              r = ::Nais::Log::Parser.loglevel_from_dns_response(record['response_code'])
-              record['level'] = r unless r.nil?
+              level = ::Nais::Log::Parser.loglevel_from_dns_response(record['response_code'])
+              record['level'] = level unless level.nil?
             elsif t == 'http_loglevel'
-              r = ::Nais::Log::Parser.loglevel_from_http_response(record['response_code'])
-              record['level'] = r unless r.nil?
+              level = ::Nais::Log::Parser.loglevel_from_http_response(record['response_code'])
+              record['level'] = level unless level.nil?
             end
           }
         end
       end
+      record
     end
 
   end
