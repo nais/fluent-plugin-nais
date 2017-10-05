@@ -24,9 +24,11 @@ module Fluent::Plugin
           end
         elsif fmt == 'accesslog_with_processing_time'
           r = ::Nais::Log::Parser.parse_accesslog_with_processing_time(record['log'])
-          r['log'] = r.delete('request') unless r.nil?
-          level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
-          r['level'] = level unless level.nil?
+          unless r.nil?
+            r['log'] = r.delete('request')
+            level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
+            r['level'] = level unless level.nil?
+          end
         elsif fmt == 'glog'
           r = ::Nais::Log::Parser.parse_glog(record['log'])
           unless r.nil?
