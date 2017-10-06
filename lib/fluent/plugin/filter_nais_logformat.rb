@@ -39,17 +39,10 @@ module Fluent::Plugin
         elsif fmt == 'influxdb'
           r = ::Nais::Log::Parser.parse_influxdb(record['log'])
           unless r.nil?
+            r['log'] = r.delete('message')
             if r['component'] == 'httpd'
-              r['log'] = r.delete('request') unless r['request'].nil?
-              r['request'] = r.delete('request_id') unless r['request_id'].nil?
               level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
               r['level'] = level unless level.nil?
-            else
-              if r.has_key?('timestamp')
-                r['log'] = record['log'].sub(/^\S+ \S+ \S+ /, '')
-              else
-                r['log'] = record['log'].sub(/^\S+ /, '')
-              end
             end
           end
         elsif fmt == 'log15'
