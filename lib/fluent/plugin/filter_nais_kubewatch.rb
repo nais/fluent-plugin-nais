@@ -23,14 +23,17 @@ module Fluent
           record['level'] = type
         end
         if record.has_key?('involvedObject')
-          if record['involvedObject']['kind'] == 'Pod'
-            if record['involvedObject']['fieldPath'] =~ /^spec.containers\{([^\}]+)\}$/
-              record['application'] = $1
+          if (record['involvedObject']['fieldPath'] =~ /^spec.containers\{([^\}]+)\}$/ ||
+              record['involvedObject']['name'] =~ /^(.+?)(?:-[0-9a-f]+)?(?:-[0-9a-z]+)?$/)
+            record['application'] = $1
+            record['namespace'] = record['involvedObject']['namespace']
+            if record['involvedObject']['kind'] == 'Pod'
               record['pod'] = record['involvedObject']['name']
-              record['namespace'] = record['involvedObject']['namespace']
-              record.delete('involvedObject')
-              record.delete('container')
+            else
+              record.delete('pod')
             end
+            record.delete('involvedObject')
+            record.delete('container')
           end
           if record.has_key?('involvedObject')
             record['involvedObject'].delete('uid')
