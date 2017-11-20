@@ -24,7 +24,7 @@ module Fluent
         end
         if record.has_key?('involvedObject')
           if (record['involvedObject']['fieldPath'] =~ /^spec.containers\{([^\}]+)\}$/ ||
-              record['involvedObject']['name'] =~ /^(.+?)(?:-[0-9a-f]+)?(?:-[0-9a-z]+)?$/)
+              record['involvedObject']['name'] =~ /^(.+?)(?:-[0-9a-f]{8,})?(?:-[0-9a-z]{5})?$/)
             record['application'] = $1
             record['namespace'] = record['involvedObject']['namespace']
             if record['involvedObject']['kind'] == 'Pod'
