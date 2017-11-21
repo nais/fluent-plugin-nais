@@ -24,7 +24,9 @@ module Fluent
         end
         if record.has_key?('involvedObject')
           if (record['involvedObject']['fieldPath'] =~ /^spec.containers\{([^\}]+)\}$/ ||
-              record['involvedObject']['name'] =~ /^(.+?)(?:-[0-9a-f]{8,})?-[0-9a-z]{5}$/)
+              record['involvedObject']['name'] =~ /^(.+?)(?:-[0-9a-f]{8,})?(?:-[0-9a-z]{5})?$/ ||
+              (record['involvedObject']['kind'] == 'ReplicaSet' && record['involvedObject']['name'] =~ /^(.+?)(?:-[0-9a-f]{8,})?$/) ||
+              (record['involvedObject']['kind'] =~ /(?:Deployment|DaemonSet)/ && record['involvedObject']['name'] =~ /^(.+)$/))
             record['application'] = $1
             record['namespace'] = record['involvedObject']['namespace']
             if record['involvedObject']['kind'] == 'Pod'
