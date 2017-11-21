@@ -1,5 +1,6 @@
 require "fluent/plugin/nais/version"
 require 'fluent/plugin/filter'
+require 'time'
 
 module Fluent
   module Plugin
@@ -45,8 +46,11 @@ module Fluent
         end
         record.delete('count')
         record.delete('firstTimestamp')
-        record.delete('lastTimestamp')
         record.delete('metadata')
+        timestamp = record.delete('lastTimestamp')
+        unless timestamp.nil?
+          record['@timestamp'] = Time.parse(timestamp).iso8601
+        end
         record
       end
       
