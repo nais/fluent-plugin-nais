@@ -38,6 +38,11 @@ module Fluent::Plugin
                 level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
                 r['level'] = level unless level.nil?
               end
+            elsif fmt == 'capnslog'
+              r = ::Nais::Log::Parser.parse_capnslog(record['log'])
+              unless r.nil?
+                r['log'] = r.delete('message')
+              end
             elsif fmt == 'glog'
               r = ::Nais::Log::Parser.parse_glog(record['log'])
               unless r.nil?
