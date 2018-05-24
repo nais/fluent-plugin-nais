@@ -43,6 +43,11 @@ module Fluent::Plugin
               unless r.nil?
                 r['log'] = r.delete('message')
               end
+            elsif fmt == 'logrus'
+              r = ::Nais::Log::Parser.parse_logrus(record['log'])
+              unless r.nil?
+                r['log'] = r.delete('msg')
+              end
             elsif fmt == 'glog'
               r = ::Nais::Log::Parser.parse_glog(record['log'])
               unless r.nil?
