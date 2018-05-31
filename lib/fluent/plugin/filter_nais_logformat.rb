@@ -48,6 +48,11 @@ module Fluent::Plugin
               unless r.nil?
                 r['log'] = r.delete('msg')
               end
+            elsif fmt == 'gokit'
+              r = ::Nais::Log::Parser.parse_gokit(record['log'])
+              unless r.nil?
+                r['log'] = r.delete('msg')
+              end
             elsif fmt == 'glog'
               r = ::Nais::Log::Parser.parse_glog(record['log'])
               unless r.nil?
