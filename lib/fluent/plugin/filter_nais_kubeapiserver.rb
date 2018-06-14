@@ -1,5 +1,6 @@
 require "fluent/plugin/nais/version"
 require 'fluent/plugin/filter'
+require 'nais/log/parser'
 
 module Fluent
   module Plugin
@@ -12,7 +13,7 @@ module Fluent
           record['level'] = 'Audit'
           if record.has_key?('user')
             if record['user'].has_key?('username')
-              if m = record['user']['username'].match(/^https:\/\/sts\.windows\.net.*\#(.*)/)
+              if m = record['user']['username'].match(/^https:\/\/sts\.windows\.net.*\#(.+)/)
                 record['x_username'] = record['user']['username']
                 record['user'] = m[1]
               else
@@ -22,7 +23,16 @@ module Fluent
           end
           record['method'] = record.delete('verb') if record.has_key?('verb')
           record['uri'] = record.delete('requestURI') if record.has_key?('requestURI')
-          record['remote_ip'] = record.delete('sourceIPs') if record.has_key?('sourceIPs')
+          record.merge!(::Nais::Log::Parser.parse_uri(record['uri']))
+          if record.has_key?('sourceIPs')
+            ips = record['sourceIPs'].is_a?(Array) ? record['sourceIPs'] : [ record['sourceIPs'] ]
+            ok = true
+            ips.each{|ip|
+              ok = (ip.is_a?(String) && ip =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/ ? true : false)
+              break unless ok
+            }
+            record['remote_ip'] = record.delete('sourceIPs') if ok
+          end
           record['@timestamp'] = record.delete('stageTimestamp') if record.has_key?('stageTimestamp')
           record.delete('apiVersion')
           record['message'] = record['method'] + ' ' + record['uri'] unless record.has_key?('message')

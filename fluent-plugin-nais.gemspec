@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'fluentd', '~> 1.1'
-  spec.add_dependency 'nais-log-parser', '>= 0.24.0'
+  spec.add_dependency 'nais-log-parser', '>= 0.26.0'
 
   spec.add_development_dependency "bundler", "~> 1.15"
   spec.add_development_dependency "rake", "~> 10.0"
