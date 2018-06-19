@@ -10,6 +10,7 @@ module Fluent
       def filter(tag, time, record)
         record['message'] = record.delete('RequestLine') if record.has_key?('RequestLine')
         record.delete('msg') if record['msg'] == ""
+        record
       end
 
     end
