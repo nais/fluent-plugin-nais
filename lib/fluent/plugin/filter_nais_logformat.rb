@@ -51,6 +51,7 @@ module Fluent::Plugin
             elsif fmt == 'gokit'
               r = ::Nais::Log::Parser.parse_gokit(record['log'])
               unless r.nil?
+                r['msg'] = r['err'] if r.has_key?('err') && !r.has_key?('msg')
                 r['log'] = r.delete('msg')
               end
             elsif fmt == 'simple'
