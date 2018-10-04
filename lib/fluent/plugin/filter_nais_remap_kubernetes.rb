@@ -24,7 +24,9 @@ module Fluent::Plugin
         if record["kubernetes"]["labels"].is_a?(Hash)
           unless @labels.nil? || @labels == ""
             @labels.split(',').each {|label|
-              record[label] = record["kubernetes"]["labels"][label] if record["kubernetes"]["labels"].has_key?(label)
+              if record["kubernetes"]["labels"].has_key?(label) && !record["kubernetes"]["labels"][label].nil? && record["kubernetes"]["labels"][label] != ""
+                record[label] = record["kubernetes"]["labels"][label]
+              end
             }
           end
         end
