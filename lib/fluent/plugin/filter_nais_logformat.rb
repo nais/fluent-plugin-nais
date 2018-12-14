@@ -62,6 +62,11 @@ module Fluent::Plugin
             unless r.nil?
               r['log'] = r.delete('message')
             end
+          elsif fmt == 'coredns'
+            r = ::Nais::Log::Parser.parse_coredns(record['log'])
+            unless r.nil?
+              r['log'] = r.delete('message')
+            end
           elsif fmt == 'simple'
             r = ::Nais::Log::Parser.parse_simple(record['log'])
             unless r.nil?
