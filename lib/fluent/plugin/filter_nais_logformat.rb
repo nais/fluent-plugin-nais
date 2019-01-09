@@ -57,6 +57,11 @@ module Fluent::Plugin
               r['msg'] = r['err'] if r.has_key?('err') && !r.has_key?('msg')
               r['log'] = r.delete('msg')
             end
+          elsif fmt == 'rook'
+            r = ::Nais::Log::Parser.parse_rook(record['log'])
+            unless r.nil?
+              r['log'] = r.delete('message')
+            end
           elsif fmt == 'redis'
             r = ::Nais::Log::Parser.parse_redis(record['log'])
             unless r.nil?
