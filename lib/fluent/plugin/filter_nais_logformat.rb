@@ -6,6 +6,7 @@ module Fluent::Plugin
   class NaisLogformatFilter < Filter
     Fluent::Plugin.register_filter('nais_logformat', self)
     config_param :logformat, :string, default: ""
+    config_param :field, :string, default: "log"
       
     def configure(conf)
       super
@@ -20,74 +21,74 @@ module Fluent::Plugin
       unless formats.nil? || formats == ""
         formats.split(',').each {|fmt|
           if fmt == 'accesslog'
-            r = ::Nais::Log::Parser.parse_accesslog(record['log'])
+            r = ::Nais::Log::Parser.parse_accesslog(record[@field])
             unless r.nil?
               r = r[0]
-              r['log'] = r.delete('request')
+              r[@field] = r.delete('request')
               level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
               r['level'] = level unless level.nil?
             end
           elsif fmt == 'accesslog_with_processing_time'
-            r = ::Nais::Log::Parser.parse_accesslog_with_processing_time(record['log'])
+            r = ::Nais::Log::Parser.parse_accesslog_with_processing_time(record[@field])
             unless r.nil?
-              r['log'] = r.delete('request')
+              r[@field] = r.delete('request')
               level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
               r['level'] = level unless level.nil?
             end
           elsif fmt == 'accesslog_with_referer_useragent'
-            r = ::Nais::Log::Parser.parse_accesslog_with_referer_useragent(record['log'])
+            r = ::Nais::Log::Parser.parse_accesslog_with_referer_useragent(record[@field])
             unless r.nil?
-              r['log'] = r.delete('request')
+              r[@field] = r.delete('request')
               level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
               r['level'] = level unless level.nil?
             end
           elsif fmt == 'capnslog'
-            r = ::Nais::Log::Parser.parse_capnslog(record['log'])
+            r = ::Nais::Log::Parser.parse_capnslog(record[@field])
             unless r.nil?
-              r['log'] = r.delete('message')
+              r[@field] = r.delete('message')
             end
           elsif fmt == 'logrus'
-            r = ::Nais::Log::Parser.parse_logrus(record['log'])
+            r = ::Nais::Log::Parser.parse_logrus(record[@field])
             unless r.nil?
-              r['log'] = r.delete('msg')
+              r[@field] = r.delete('msg')
             end
           elsif fmt == 'gokit'
-            r = ::Nais::Log::Parser.parse_gokit(record['log'])
+            r = ::Nais::Log::Parser.parse_gokit(record[@field])
             unless r.nil?
               r['msg'] = r['err'] if r.has_key?('err') && !r.has_key?('msg')
-              r['log'] = r.delete('msg')
+              r[@field] = r.delete('msg')
             end
           elsif fmt == 'rook'
-            r = ::Nais::Log::Parser.parse_rook(record['log'])
+            r = ::Nais::Log::Parser.parse_rook(record[@field])
             unless r.nil?
-              r['log'] = r.delete('message')
+              r[@field] = r.delete('message')
             end
           elsif fmt == 'redis'
-            r = ::Nais::Log::Parser.parse_redis(record['log'])
+            r = ::Nais::Log::Parser.parse_redis(record[@field])
             unless r.nil?
-              r['log'] = r.delete('message')
+              r[@field] = r.delete('message')
             end
           elsif fmt == 'coredns'
-            r = ::Nais::Log::Parser.parse_coredns(record['log'])
+            r = ::Nais::Log::Parser.parse_coredns(record[@field])
             unless r.nil?
-              r['log'] = r.delete('message')
+              r[@field] = r.delete('message')
             end
           elsif fmt == 'simple'
-            r = ::Nais::Log::Parser.parse_simple(record['log'])
+            r = ::Nais::Log::Parser.parse_simple(record[@field])
             unless r.nil?
-              r['log'] = r.delete('message')
+              r[@field] = r.delete('message')
             end
           elsif fmt == 'glog'
-            r = ::Nais::Log::Parser.parse_glog(record['log'])
+            r = ::Nais::Log::Parser.parse_glog(record[@field])
             unless r.nil?
               r['source'] = r['file']+':'+r.delete('line')
               r['component'] = r.delete('file')
-              r['log'] = r.delete('message')
+              r[@field] = r.delete('message')
             end
           elsif fmt == 'influxdb'
-            r = ::Nais::Log::Parser.parse_influxdb(record['log'])
+            r = ::Nais::Log::Parser.parse_influxdb(record[@field])
             unless r.nil?
-              r['log'] = r.delete('message')
+              r[@field] = r.delete('message')
               if r['component'] == 'httpd'
                 level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
                 r['level'] = level unless level.nil?
