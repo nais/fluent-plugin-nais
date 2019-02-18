@@ -6,7 +6,12 @@ module Fluent
   module Plugin
     class NaisKubewatchFilter < Fluent::Plugin::Filter
       Fluent::Plugin.register_filter('nais_kubewatch', self)
+      config_param :type_field, :string, default: "type"
       
+      def configure(conf)
+        super
+      end
+
       def filter(tag, time, record)
         if record['source'].is_a?(Hash)
           if record['source'].has_key?('host')
@@ -17,7 +22,7 @@ module Fluent
           end
         end
         record['event'] = record.delete('reason') if record.has_key?('reason')
-        type = record.delete('type')
+        type = record.delete(@type_field)
         if type == 'Normal'
           record['level'] = 'Info'
         elsif !type.nil?
