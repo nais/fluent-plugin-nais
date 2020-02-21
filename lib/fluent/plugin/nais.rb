@@ -1,7 +1,8 @@
+require_relative "./nais/version.rb"
+
 module Fluent
   module Plugin
     module Nais
-      VERSION = "0.38.1"
     end
   end
 end
