@@ -96,6 +96,8 @@ module Fluent::Plugin
             end
           elsif fmt == 'log15'
             ::Nais::Log::Parser.remap_log15(record)
+          elsif fmt == 'jupyter-notebook'
+            ::Nais::Log::Parser.parse_jupyterhub_notebook(record)
           end
           break unless r.nil?
         }
