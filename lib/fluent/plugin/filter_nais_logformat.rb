@@ -42,6 +42,13 @@ module Fluent::Plugin
               level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
               r['level'] = level unless level.nil?
             end
+          elsif fmt == 'accesslog_nginx_ingress'
+            r = ::Nais::Log::Parser.parse_accesslog_nginx_ingress(record[@field])
+            unless r.nil?
+              r[@field] = r.delete('request')
+              level = ::Nais::Log::Parser.loglevel_from_http_response(r['response_code'])
+              r['level'] = level unless level.nil?
+            end
           elsif fmt == 'capnslog'
             r = ::Nais::Log::Parser.parse_capnslog(record[@field])
             unless r.nil?
