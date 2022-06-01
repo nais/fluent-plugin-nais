@@ -21,6 +21,7 @@ module Fluent::Plugin
         record["namespace"] = record["kubernetes"]["namespace_name"]
         record["application"] = record["kubernetes"]["container_name"]
         record["pod"] = record["kubernetes"]["pod_name"]
+        record["container"] = record["kubernetes"]["container_name"]
         if record["kubernetes"]["labels"].is_a?(Hash)
           if record["kubernetes"]["labels"].has_key?("app") &&
              !record["kubernetes"]["labels"]["app"].nil? &&
