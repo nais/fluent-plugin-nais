@@ -13,7 +13,7 @@ module Fluent::Plugin
     def filter(tag, time, record)
       record["category"] = record.delete("stream") if record.has_key?("stream")
       if record["docker"].is_a?(Hash)
-        record["container"] = record["docker"]["container_id"]
+        record["container_id"] = record["docker"]["container_id"]
         record.delete("docker")
       end
       if record["kubernetes"].is_a?(Hash)
@@ -22,6 +22,11 @@ module Fluent::Plugin
         record["application"] = record["kubernetes"]["container_name"]
         record["pod"] = record["kubernetes"]["pod_name"]
         if record["kubernetes"]["labels"].is_a?(Hash)
+          if record["kubernetes"]["labels"].has_key?("app") &&
+             !record["kubernetes"]["labels"]["app"].nil? &&
+             record["kubernetes"]["labels"]["app"] != ""
+            record["application"] = record["kubernetes"]["labels"]["app"]
+          end
           unless @labels.nil? || @labels == ""
             @labels.split(',').each {|label|
               if record["kubernetes"]["labels"].has_key?(label) && !record["kubernetes"]["labels"][label].nil? && record["kubernetes"]["labels"][label] != ""
