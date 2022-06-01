@@ -12,10 +12,7 @@ module Fluent::Plugin
       
     def filter(tag, time, record)
       record["category"] = record.delete("stream") if record.has_key?("stream")
-      if record["docker"].is_a?(Hash)
-        record["container_id"] = record["docker"]["container_id"]
-        record.delete("docker")
-      end
+      record.delete("docker")
       if record["kubernetes"].is_a?(Hash)
         record["host"] = record["kubernetes"]["host"]
         record["namespace"] = record["kubernetes"]["namespace_name"]
