@@ -42,6 +42,7 @@ module Fluent
             end
             record.delete('involvedObject')
             record.delete('container')
+            record.delete('container_id')
           end
           if record.has_key?('involvedObject')
             record['involvedObject'].delete('uid')
